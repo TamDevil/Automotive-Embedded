@@ -175,9 +175,47 @@ TIM_TimeBaseInit(TIM2, &TIM_TimeBaseInitStruct);    // Cấu hình Timer
 
 TIM_Cmd(TIM2, ENABLE); // Bắt đầu Timer
 ```
+## Bài 4: Communication Protocols
+Truyền nhận dữ liệu giữa các MCU hay giữa MCU với các ngoại vi thực chất là sự truyền tín hiệu điện áp 3,3V hoặc 5v tương ứng với giá trị 1 và 0v tương ứng với giá trị 0 trong hệ nhị phân. Dùng các dãy 0 và 1 định nghĩa các dữ liệu phức tạp. Nhưng khi gửi 2 lần với cùng 1 giá trị thì các ngoại vi sẽ không phân biệt được đó là dữ liệu mới hay dữ liệu cũ chưa được gửi hoàn tất khiến sai lệch dữ liệu nên các chuẩn giao tiếp được ra đời.
 
+### SPI (Serial Peripheral Interface)
+- Chuẩn giao tiếp nối tiếp
+Chỉ gửi hoặc nhận 1 bit trong một thời gian nhất định khác với giao tiếp song song có thể gửi hoặc nhận nhiều bit trong cùng một thời gian nhưng lại tốn phần cứng do cần dùng quá nhiều dây dữ liệu.
+- Hoạt động ở chế độ song công (Có thể truyền - nhận cùng thời điểm).
+  Bổ sung: đơn công là chỉ có 1 chức năng truyền hoặc nhận, bán song công chỉ có thể truyền hoặc nhận trong 1 thời điểm.
+- Một Master có thể giao tiếp với nhiều Slave
+- Đồng bộ giúp Master và Slave tương tác khi nào truyền hoặc nhận dữ liệu.
+- Có 4 dây giao tiếp:
++ SCK (Serial Clock): Thiết bị Master tạo xung tín hiệu SCK và cung cấp cho Slave.
++ MISO (Master Input Slave Output): Tín hiệu tạo bởi thiết bị Slave và nhận bởi thiết bị Master.
++ MOSI (Master Output Slave Input): Tín hiệu tạo bởi thiết bị Master và nhận bởi thiết bị Slave. 
++ SS (Đôi khi CS- Slave Select/Chip Select): Chọn thiết bị Slave cụ thể để giao tiếp. Để chọn Slave giao tiếp thiết bị Master chủ động kéo đường SS tương ứng xuống mức 0 (Low). 
+Nguyên lý hoạt động:
+  Để bắt đầu quá trình Master đưa chân CS xuống 0v để chọn Slave muốn truyền/nhận dữ liệu sau đó kích hoạt xung cho chân SCK, với mỗi xung chân MISO sẽ truyền 1 bit từ Slave cho Master và chân MOSI sẽ truyền 1 bit từ Master cho Slave 
 
+Có 4 chế độ SPI được tạo bởi tổ hợp CPOL và CPHA
+CPOL = 0 nghĩa là chế độ nghỉ của chân SCK ở mức low (0v)
+CPOL = 1 nghĩa là chế độ nghỉ của chân SCK ở mức High (3,3v hoặc 5v)
+CPHA = 0 nghĩa là sẽ thực hiện nhận tín hiệu ở thời điểm bắt đầu 1 xung và gửi tín hiệu ở thời điểm kết thúc 1 xung.
+CPHA = 1 nghĩa là sẽ thực hiện gửi tín hiệu ở thời điểm bắt đầu 1 xung và nhận tín hiệu ở thời điểm kết thúc 1 xung.
 
+Chế độ 0: CPOL = 0; CPHA = 0
+Nhận dữ liệu khi SCK từ low lên high và truyền dữ liệu khi SCK từ high xuống low.
+Chế độ 1: CPOL = 0; CPHA = 1
+Nhận dữ liệu khi SCK từ high xuống low và truyền dữ liệu khi SCK từ low lên high.
+Chế độ 2: CPOL = 1; CPHA = 0
+Nhận dữ liệu khi SCK từ high xuống low và truyền dữ liệu khi SCK từ low lên high.
+Chế độ 3: CPOL = 1; CPHA = 1
+Nhận dữ liệu khi SCK từ low lên high và truyền dữ liệu khi SCK từ high xuống low.
 
+### I2C (Inter-Integrated Circuit)
+Cũng gần giống SPI nhưng chỉ có 2 dây 1 dây để đồng bộ tín hiệu nhận/truyền dữ liệu như SCK là chân SCL (Serial Clock) chân còn lại là SDA(Serial Data) chỉ truyền hoặc nhận dữ liệu tại 1 thời điểm (chế độ bán song công). I2C khi không làm việc 2 chân sẽ rơi vào trạng thái Open-Drain (lơ lửng) không có 1 điện áp cụ thể nên sẽ mắc 2 dây vào nguồn 5v hoặc 3,3v thông qua 2 điện trở để tránh tình trạng này.
 
-    
+Nguyên lý hoạt động:
+Để truyền/nhận dữ liệu thì chân SDA từ mức 1 xuống mức 0 trước chân SCL để hoàn tất điều kiện bắt đầu. Tiếp theo, vì không có chân SC như SPI để chỉ rõ Slave mục tiêu nên Master sẽ truyền 7 bit địa chỉ của Slave cần tìm và 1 bit biểu diễn trạng thái truyền hoặc nhận dữ liệu cho tất cả Slave. Slave trùng địa chỉ sẽ truyền bit ACK kéo SDA xuống 0v để xác nhận và truyền/nhận dữ liệu như bình thường. Điều kiện kết thúc là đưa chân SCL lên mức 1 trước chân SDA.
+
+### UART
+Không có cơ chế đồng bộ như I2C hay SPI, chỉ có 2 thiết bị cùng cấp tương tác với nhau và có dây truyền dữ liệu TX(transmit) và nhận dữ liệu RX(Receive). vì không có cơ chế đồng bộ nên phải tạo 1 bộ timer delay để quản lý thời điểm truyền/nhận dữ liệu và giữa các MCU có tần số xử lý khác nhau nên phải tạo ra 1 thời gian delay tiêu chuẩn dựa vào baudrate. Baudrate là số bits có thể truyền trong thời gian 1 giây và biến đổi nó để có được thời gian truyền/nhận 1 bit, từ đó tạo delay dựa trên thời gian đó để quản lý thời điểm truyền/nhận.
+
+Nguyên lý hoạt động:
+Để bắt đầu giao tiếp cần cho Tx của 1 thiết bị xuống 0 và delay 1 khoảng bằng với thời gian truyền 1 bit. Sau đó sẽ truyền/nhận dữ liệu mỗi bit rồi delay tiếp tục như vậy cho đến hết dữ liệu. Tiếp theo sẽ có cơ chế xác nhận dữ liệu thông qua việc truyền thêm 1 bit theo quy luật chẵn, lẽ. Dữ liệu có 3 lần số 1 thì sẽ thêm bit 1 hoặc bit 0 để trở thành quy luật chãn hoặc lẻ theo quy định từ trước. Nếu quy định là quy luật chẵn nhưng khi thêm bit Parity lại ra lẻ thì bị lỗi dữ liệu. Nhược điểm của parity là nếu số bit bị lỗi là chẵn thì sẽ không thể nhận biết được. Kết thúc quá trình giao tiếp bằng cách đưa Tx từ 0 lên 1 và delay 1 khoảng thời gian bằng thời gian gửi được 1 bit.
