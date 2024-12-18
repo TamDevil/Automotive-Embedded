@@ -194,18 +194,18 @@ Nguyên lý hoạt động:
   Để bắt đầu quá trình Master đưa chân CS xuống 0v để chọn Slave muốn truyền/nhận dữ liệu sau đó kích hoạt xung cho chân SCK, với mỗi xung chân MISO sẽ truyền 1 bit từ Slave cho Master và chân MOSI sẽ truyền 1 bit từ Master cho Slave 
 
 Có 4 chế độ SPI được tạo bởi tổ hợp CPOL và CPHA
-CPOL = 0 nghĩa là chế độ nghỉ của chân SCK ở mức low (0v)
-CPOL = 1 nghĩa là chế độ nghỉ của chân SCK ở mức High (3,3v hoặc 5v)
-CPHA = 0 nghĩa là sẽ thực hiện nhận tín hiệu ở thời điểm bắt đầu 1 xung và gửi tín hiệu ở thời điểm kết thúc 1 xung.
-CPHA = 1 nghĩa là sẽ thực hiện gửi tín hiệu ở thời điểm bắt đầu 1 xung và nhận tín hiệu ở thời điểm kết thúc 1 xung.
+- CPOL = 0 nghĩa là chế độ nghỉ của chân SCK ở mức low (0v)
+- CPOL = 1 nghĩa là chế độ nghỉ của chân SCK ở mức High (3,3v hoặc 5v)
+- CPHA = 0 nghĩa là sẽ thực hiện nhận tín hiệu ở thời điểm bắt đầu 1 xung và gửi tín hiệu ở thời điểm kết thúc 1 xung.
+- CPHA = 1 nghĩa là sẽ thực hiện gửi tín hiệu ở thời điểm bắt đầu 1 xung và nhận tín hiệu ở thời điểm kết thúc 1 xung.
 
-Chế độ 0: CPOL = 0; CPHA = 0
+- Chế độ 0: CPOL = 0; CPHA = 0
 Nhận dữ liệu khi SCK từ low lên high và truyền dữ liệu khi SCK từ high xuống low.
-Chế độ 1: CPOL = 0; CPHA = 1
+- Chế độ 1: CPOL = 0; CPHA = 1
 Nhận dữ liệu khi SCK từ high xuống low và truyền dữ liệu khi SCK từ low lên high.
-Chế độ 2: CPOL = 1; CPHA = 0
+- Chế độ 2: CPOL = 1; CPHA = 0
 Nhận dữ liệu khi SCK từ high xuống low và truyền dữ liệu khi SCK từ low lên high.
-Chế độ 3: CPOL = 1; CPHA = 1
+- Chế độ 3: CPOL = 1; CPHA = 1
 Nhận dữ liệu khi SCK từ low lên high và truyền dữ liệu khi SCK từ high xuống low.
 
 ### I2C (Inter-Integrated Circuit)
